@@ -1,8 +1,11 @@
+import { cardDeck } from "data/CardDeckData"
 import { trackData } from "data/TrackData"
 import { TrackType } from "types/Track"
 import { TrackTile } from "./TrackTile"
 
 export const Track = () => {
+  cardDeck.shuffle()
+  console.log(cardDeck.cards)
   const buildTrack = () => {
     return trackData.map((tile) => {
       return (
