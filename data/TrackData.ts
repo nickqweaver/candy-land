@@ -14,6 +14,7 @@ export const trackTileFactory = (
     key,
   }
 }
+
 export const trackPatternFactory = (
   modifier?: {
     tile: TrackType
@@ -33,10 +34,10 @@ export const trackPatternFactory = (
   ].map((tile) => {
     if (modifier?.tile === tile.type) {
       return trackTileFactory(
-        tile.type,
-        tile.key,
-        tile.slideTo,
-        tile.shouldSkipTurn
+        modifier.tile,
+        modifier.key,
+        modifier.slideTo,
+        modifier.shouldSkipTurn
       )
     }
     return tile
@@ -79,8 +80,14 @@ export const trackData: TrackTileType[] = [
     index: 4,
   }),
   ...trackPatternFactory(),
+  ...trackPatternFactory(undefined, {
+    tile: trackTileFactory(TrackType.LOLLIPOP),
+    index: 1,
+  }),
   ...trackPatternFactory(),
-  ...trackPatternFactory(),
-  ...trackPatternFactory(),
+  ...trackPatternFactory(undefined, {
+    tile: trackTileFactory(TrackType.ICE_CREAM),
+    index: 3,
+  }),
   ...trackPatternFactory(),
 ]

@@ -6,7 +6,7 @@ export const Track = () => {
   const buildTrack = () => {
     return trackData.map((tile) => {
       return (
-        <TrackTile key={tile.key} {...tile}>
+        <TrackTile key={tile.key} {...tile} tileKey={tile.key}>
           {(tile.type === TrackType.GUM_DROP ||
             tile.type === TrackType.ICE_CREAM ||
             tile.type === TrackType.PEPPERMINT ||

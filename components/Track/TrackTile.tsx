@@ -1,7 +1,10 @@
 import { TrackTileType, TrackType } from "types/Track"
 
 export const TrackTile = (
-  props: TrackTileType & { children: React.ReactNode }
+  props: Omit<TrackTileType, "key"> & {
+    children: React.ReactNode
+    tileKey?: string
+  }
 ) => {
   const getColorFromTrackType = (type: TrackType) => {
     switch (type) {
@@ -22,6 +25,7 @@ export const TrackTile = (
       case TrackType.GUM_DROP:
       case TrackType.PEPPERMINT:
       case TrackType.CHOCOLATE:
+      case TrackType.LOLLIPOP:
         return "#ff7dba"
     }
   }
@@ -37,6 +41,7 @@ export const TrackTile = (
       }}
     >
       {props.children}
+      {props.tileKey}
     </div>
   )
 }
