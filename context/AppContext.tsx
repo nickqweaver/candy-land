@@ -105,7 +105,7 @@ function reducer(state: AppState, action: Action): AppState {
           },
         }
       } else {
-        for (let i = currentPosition; i < trackData.length; i++) {
+        for (let i = currentPosition + 1; i < trackData.length; i++) {
           if (trackData[i].type === cardPulled.type) {
             movedCount++
             newPosition = i

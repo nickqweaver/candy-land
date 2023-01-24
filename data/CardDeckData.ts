@@ -1,7 +1,7 @@
 import { Card, CardDeck } from "types/Cards"
 import { TrackType } from "types/Track"
 
-const isGeneralType = (type: TrackType) => {
+export const isGeneralType = (type: TrackType) => {
   if (
     type === TrackType.BLUE ||
     type === TrackType.GREEN ||
