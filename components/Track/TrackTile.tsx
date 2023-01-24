@@ -1,9 +1,11 @@
+import { Player, PlayerColors } from "types/Player"
 import { TrackTileType, TrackType } from "types/Track"
 
 export const TrackTile = (
   props: Omit<TrackTileType, "key"> & {
     children: React.ReactNode
     tileKey?: string
+    activePlayerColor?: PlayerColors // Support multi player on same tile
   }
 ) => {
   const getColorFromTrackType = (type: TrackType) => {
@@ -29,6 +31,20 @@ export const TrackTile = (
         return "#ff7dba"
     }
   }
+
+  const getPlayerColor = (color: PlayerColors) => {
+    switch (color) {
+      case "BLUE":
+        return "#0018a1"
+      case "RED":
+        return "#db352c"
+      case "YELLOW":
+        return "#dbca2c"
+      case "GREEN":
+        return "#00a10d"
+    }
+  }
+
   return (
     <div
       style={{
@@ -36,7 +52,11 @@ export const TrackTile = (
         height: "100px",
         borderRadius: "6px",
         backgroundColor: getColorFromTrackType(props.type),
-        border: "3px solid white",
+        border: `3px solid ${
+          props.activePlayerColor
+            ? getPlayerColor(props.activePlayerColor)
+            : "#FFF"
+        }`,
         boxShadow: "1px -1px 19px 8px rgba(194,194,194,0.75)",
       }}
     >

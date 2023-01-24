@@ -42,15 +42,18 @@ const specialCardFactory = (type: Card["type"]): Card => {
 }
 
 export const shuffle = (deck: CardDeck) => {
+  const copiedDeck = [...deck]
   const generateRandom = (max: number) => Math.floor(Math.random() * max)
 
-  for (let i = deck.length - 1; i >= 0; i--) {
+  for (let i = copiedDeck.length - 1; i >= 0; i--) {
     const random = generateRandom(i)
-    const temp = deck[random]
+    const temp = copiedDeck[random]
 
-    deck[random] = deck[i]
-    deck[i] = temp
+    copiedDeck[random] = copiedDeck[i]
+    copiedDeck[i] = temp
   }
+
+  return copiedDeck
 }
 
 const PURPLE = generalCardFactory(TrackType.PURPLE)

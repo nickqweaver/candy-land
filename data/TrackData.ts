@@ -1,4 +1,3 @@
-import { Track } from "components/Track/Track"
 import { TrackType, TrackTileType } from "../types/Track"
 
 export const trackTileFactory = (
