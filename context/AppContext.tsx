@@ -1,5 +1,5 @@
 import { createContext, useReducer, useEffect } from "react"
-import { cardDeck, shuffle } from "data/CardDeckData"
+import { cardDeck, isGeneralType, shuffle } from "data/CardDeckData"
 import { trackData } from "data/TrackData"
 import { CardDeck } from "types/Cards"
 import { MinimalPlayer, IndexedPlayer } from "types/Player"
@@ -82,34 +82,58 @@ function reducer(state: AppState, action: Action): AppState {
       let newPosition = currentPosition
       let movedCount = 0
 
-      for (let i = currentPosition; i < trackData.length; i++) {
-        console.log(cardPulled.type, "Card Pulled")
-        if (trackData[i].type === cardPulled.type) {
-          movedCount++
-          newPosition = i
+      // Clean this up... Way too much duplicate code
+      if (!isGeneralType(cardPulled.type)) {
+        const newPosition = state.track.findIndex(
+          (trackTile) => trackTile.type === cardPulled.type
+        )
+        const newPlayers = state.players.map((player, index) =>
+          state.activePlayerIndex === player.index
+            ? { ...player, position: newPosition }
+            : player
+        )
+
+        const nextIndex = state.activePlayerIndex + 1
+
+        return {
+          ...state,
+          players: newPlayers,
+          activePlayerIndex: nextIndex >= state.players.length ? 0 : nextIndex,
+          cardDeck: {
+            used: usedCards,
+            unused: unusedCards,
+          },
         }
-        if (movedCount === cardPulled.multiplier) {
-          break
+      } else {
+        for (let i = currentPosition; i < trackData.length; i++) {
+          if (trackData[i].type === cardPulled.type) {
+            movedCount++
+            newPosition = i
+          }
+          if (movedCount === cardPulled.multiplier) {
+            break
+          }
+        }
+
+        const newPlayers = state.players.map((player, index) =>
+          state.activePlayerIndex === player.index
+            ? { ...player, position: newPosition }
+            : player
+        )
+
+        const nextIndex = state.activePlayerIndex + 1
+
+        return {
+          ...state,
+          players: newPlayers,
+          activePlayerIndex: nextIndex >= state.players.length ? 0 : nextIndex,
+          cardDeck: {
+            used: usedCards,
+            unused: unusedCards,
+          },
         }
       }
 
-      const newPlayers = state.players.map((player, index) =>
-        state.activePlayerIndex === player.index
-          ? { ...player, position: newPosition }
-          : player
-      )
-
-      const nextIndex = state.activePlayerIndex + 1
-
-      return {
-        ...state,
-        players: newPlayers,
-        activePlayerIndex: nextIndex >= state.players.length ? 0 : nextIndex,
-        cardDeck: {
-          used: usedCards,
-          unused: unusedCards,
-        },
-      }
     default:
       return state
   }
