@@ -1,5 +1,6 @@
 import { getColorFromTrackType } from "helpers/getColorFromTrackType"
 import { Card as CardType } from "types/Cards"
+import { TrackType } from "types/Track"
 
 export const Card = (props: CardType) => {
   const tiles = [...Array(props.multiplier).keys()].map((_, i) => {
@@ -30,6 +31,11 @@ export const Card = (props: CardType) => {
       }}
     >
       {tiles}
+      {(props.type === TrackType.GUM_DROP ||
+        props.type === TrackType.ICE_CREAM ||
+        props.type === TrackType.PEPPERMINT ||
+        props.type === TrackType.CHOCOLATE ||
+        props.type === TrackType.LOLLIPOP) && <span>{props.type}</span>}
     </div>
   )
 }

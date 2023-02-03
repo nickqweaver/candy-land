@@ -18,17 +18,29 @@ export default function Home() {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 300px" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 280px" }}>
       <Track />
       <div
         style={{
           display: "grid",
-          gridTemplateRows: "64px 1fr 1fr",
+          gridTemplateRows: "256px 1fr 1fr",
           alignItems: "center",
+          position: "fixed",
+          right: "0px",
+          width: "280px",
+          margin: "auto",
+          background: "#FFF",
         }}
       >
-        <div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateRows: "64px 64px 64px",
+            rowGap: "8px",
+          }}
+        >
           <button
+            disabled={state.players.length >= 3}
             onClick={() =>
               dispatch({
                 type: "CREATE_PLAYER",
@@ -39,16 +51,42 @@ export default function Home() {
             Create Player
           </button>
           <button
+            disabled={state.players.length >= 3}
             onClick={() =>
               dispatch({
                 type: "CREATE_PLAYER",
-                player: { name: "Olivia", color: "RED" },
+                player: { name: "Olivia", color: "GREEN" },
               })
             }
           >
             Create 2nd Player
           </button>
-          <button onClick={() => takeTurn()} disabled={isMoveDisabled}>
+          <button
+            disabled={state.players.length >= 3}
+            onClick={() =>
+              dispatch({
+                type: "CREATE_PLAYER",
+                player: { name: "Lenny", color: "RED" },
+              })
+            }
+          >
+            Create 3rd Player
+          </button>
+          <button
+            onClick={() => takeTurn()}
+            disabled={isMoveDisabled}
+            style={{
+              background: `${
+                isMoveDisabled ? "rgba(0, 0, 0, .50)" : "rgba(0, 0, 0, .90)"
+              }`,
+              padding: "8px 24px",
+              fontSize: "16px",
+              color: "#FFF",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
             Pull Card
           </button>
         </div>
