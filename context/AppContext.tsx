@@ -1,7 +1,7 @@
 import { createContext, useReducer, useEffect } from "react"
 import { cardDeck, isGeneralType, shuffle } from "data/CardDeckData"
 import { trackData } from "data/TrackData"
-import { CardDeck } from "types/Cards"
+import { Card, CardDeck } from "types/Cards"
 import { MinimalPlayer, IndexedPlayer } from "types/Player"
 import { TrackTileType } from "types/Track"
 
@@ -11,6 +11,7 @@ type AppState = {
     used: CardDeck
     unused: CardDeck
   }
+  activeCard: Card | null
   activePlayerIndex: number
   track: TrackTileType[]
 }
@@ -21,6 +22,7 @@ const initialState: AppState = {
     used: [],
     unused: [...cardDeck.cards],
   },
+  activeCard: null,
   activePlayerIndex: 0,
   track: trackData,
 }
@@ -30,6 +32,7 @@ type Action =
   | { type: "MOVE_PLAYER" }
   | { type: "CREATE_PLAYER"; player: MinimalPlayer }
   | { type: "SHUFFLE_CARD_DECK" }
+  | { type: "PULL_CARD" }
 
 export const AppContext = createContext<{
   state: AppState
@@ -68,24 +71,38 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         players,
       }
-    case "MOVE_PLAYER":
-      const currentPosition = state.players[state.activePlayerIndex].position
+    case "PULL_CARD":
       const unusedCards = [...state.cardDeck.unused]
       const cardPulled = unusedCards.pop()
 
       if (!cardPulled) {
         throw "There are no cards left!"
       }
-
       const usedCards = [...state.cardDeck.used, cardPulled]
+
+      return {
+        ...state,
+        cardDeck: {
+          used: usedCards,
+          unused: unusedCards,
+        },
+        activeCard: cardPulled,
+      }
+
+    case "MOVE_PLAYER":
+      const currentPosition = state.players[state.activePlayerIndex].position
 
       let newPosition = currentPosition
       let movedCount = 0
 
+      if (!state.activeCard) {
+        throw "There's no active card!"
+      }
+
       // Clean this up... Way too much duplicate code
-      if (!isGeneralType(cardPulled.type)) {
+      if (!isGeneralType(state.activeCard.type)) {
         const newPosition = state.track.findIndex(
-          (trackTile) => trackTile.type === cardPulled.type
+          (trackTile) => trackTile.type === state?.activeCard?.type
         )
         const newPlayers = state.players.map((player, index) =>
           state.activePlayerIndex === player.index
@@ -99,25 +116,25 @@ function reducer(state: AppState, action: Action): AppState {
           ...state,
           players: newPlayers,
           activePlayerIndex: nextIndex >= state.players.length ? 0 : nextIndex,
-          cardDeck: {
-            used: usedCards,
-            unused: unusedCards,
-          },
         }
       } else {
+        let shouldSkipNextTurn = false
         for (let i = currentPosition + 1; i < trackData.length; i++) {
-          if (trackData[i].type === cardPulled.type) {
+          if (trackData[i].type === state.activeCard.type) {
             movedCount++
             newPosition = i
           }
-          if (movedCount === cardPulled.multiplier) {
+          if (movedCount === state.activeCard.multiplier) {
+            if (trackData[i].shouldSkipTurn) {
+              shouldSkipNextTurn = true
+            }
             break
           }
         }
 
         const newPlayers = state.players.map((player, index) =>
           state.activePlayerIndex === player.index
-            ? { ...player, position: newPosition }
+            ? { ...player, position: newPosition, shouldSkipNextTurn }
             : player
         )
 
@@ -127,10 +144,6 @@ function reducer(state: AppState, action: Action): AppState {
           ...state,
           players: newPlayers,
           activePlayerIndex: nextIndex >= state.players.length ? 0 : nextIndex,
-          cardDeck: {
-            used: usedCards,
-            unused: unusedCards,
-          },
         }
       }
 

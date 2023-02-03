@@ -8,7 +8,7 @@ export const trackTileFactory = (
 ): TrackTileType => {
   return {
     type,
-    shouldSkipTurn: false ?? shouldSkipTurn,
+    shouldSkipTurn: shouldSkipTurn ?? false,
     slideTo,
     key,
   }
